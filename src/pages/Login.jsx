@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/authService";
@@ -8,33 +9,27 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  try {
-    const data = await loginUser(email, password);
+    try {
+      const data = await loginUser(email, password);
 
-    
-localStorage.setItem("access_token", data.access_token);
-localStorage.setItem(
-  "user",
-  JSON.stringify(data.user)   
-);
+      // 🔐 SAVE TOKEN & USER
+      localStorage.setItem("access_token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-// 👑 ROLE BASED REDIRECT 
-if (data.user.role === "admin") {
-  navigate("/admin");       
-} else {
-  navigate("/dashboard");   
-}
-
-  } catch (err) {
-    setError(err.message);
-  }
-};
-
-
+      // 👑 ROLE BASED REDIRECT
+      if (data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError("Invalid email or password");
+    }
+  };
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-green-50">
@@ -46,7 +41,9 @@ if (data.user.role === "admin") {
           Login
         </h2>
 
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+        {error && (
+          <p className="text-red-600 text-sm text-center">{error}</p>
+        )}
 
         <input
           type="email"

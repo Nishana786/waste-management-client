@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminCharts from "../../components/Admin/AdminCharts";
-
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://127.0.0.1:5000";
+import { API_URL } from "../../services/config"; // ✅ CENTRAL API URL
 
 const SystemStats = () => {
   const navigate = useNavigate();
@@ -24,15 +22,17 @@ const SystemStats = () => {
       .then((res) => {
         if (res.status === 401 || res.status === 403) {
           navigate("/login");
-          return;
+          return null;
         }
         return res.json();
       })
-      .then((data) => setStats(data))
+      .then((data) => {
+        if (data) setStats(data);
+      })
       .catch(() => navigate("/login"));
   }, [token, navigate]);
 
-  /* 🔄 STABLE LOADER */
+  /* 🔄 LOADER */
   if (!stats) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
@@ -68,7 +68,7 @@ const SystemStats = () => {
         <Stat title="Completed Pickups" value={stats.completedPickups} color="emerald" />
       </div>
 
-      {/* 📈 CHARTS */}
+      {/* CHARTS */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           📈 Visual Analytics

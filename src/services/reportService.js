@@ -1,12 +1,13 @@
+import { API_URL } from "./config";
 
 export const createReport = async (formData) => {
   const token = localStorage.getItem("access_token");
-  console.log("TOKEN:", token);
 
-  const response = await fetch("http://127.0.0.1:5000/report", {
+  const response = await fetch(`${API_URL}/report`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+   
     },
     body: formData,
   });

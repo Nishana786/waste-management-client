@@ -4,15 +4,21 @@ const AdminRoute = () => {
   const token = localStorage.getItem("access_token");
   const user = JSON.parse(localStorage.getItem("user"));
 
-  if (!token || !user) {
+  // 🔍 DEBUG
+  console.log("ADMIN USER:", user);
+
+  // 🔒 Not logged in
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== "admin") {
+  // 👑 Not admin
+  if (!user || user.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <Outlet />; 
+  // ✅ Admin allowed
+  return <Outlet />;
 };
 
 export default AdminRoute;

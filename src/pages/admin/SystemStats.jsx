@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminCharts from "../../components/Admin/AdminCharts";
-import { API_URL } from "../../services/config"; // ✅ CENTRAL API URL
+
+/* ✅ ENV BASED API URL */
+const API_URL = import.meta.env.VITE_API_URL;
 
 const SystemStats = () => {
   const navigate = useNavigate();
@@ -29,10 +31,13 @@ const SystemStats = () => {
       .then((data) => {
         if (data) setStats(data);
       })
-      .catch(() => navigate("/login"));
+      .catch((err) => {
+        console.error("Fetch error:", err);
+        navigate("/login");
+      });
   }, [token, navigate]);
 
-  /* 🔄 LOADER */
+  /* 🔄 LOADING */
   if (!stats) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
@@ -43,7 +48,6 @@ const SystemStats = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* HEADER */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-800">
           📊 System Statistics
@@ -53,7 +57,6 @@ const SystemStats = () => {
         </p>
       </div>
 
-      {/* STATS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-14">
         <Stat title="Total Reports" value={stats.totalReports} color="green" />
         <Stat title="Pending Reports" value={stats.pendingReports} color="yellow" />
@@ -68,7 +71,6 @@ const SystemStats = () => {
         <Stat title="Completed Pickups" value={stats.completedPickups} color="emerald" />
       </div>
 
-      {/* CHARTS */}
       <div className="bg-white rounded-xl shadow p-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-800">
           📈 Visual Analytics
@@ -79,7 +81,7 @@ const SystemStats = () => {
   );
 };
 
-/* ---------------- STAT CARD ---------------- */
+/* ---------- STAT CARD ---------- */
 
 const colorMap = {
   green: "bg-green-100 text-green-700",
@@ -98,7 +100,7 @@ const Stat = ({ title, value, color }) => (
       {title}
     </div>
     <h2 className="text-3xl font-bold text-gray-800">
-      {value}
+      {value ?? 0}
     </h2>
   </div>
 );

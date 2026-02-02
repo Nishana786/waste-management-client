@@ -1,13 +1,14 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,17 +17,15 @@ const Login = () => {
     try {
       const data = await loginUser(email, password);
 
-      // 🔐 SAVE TOKEN & USER
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // ✅ CONTEXT LOGIN
+      login(data);
 
-      // 👑 ROLE BASED REDIRECT
       if (data.user.role === "admin") {
         navigate("/admin");
       } else {
         navigate("/dashboard");
       }
-    } catch (err) {
+    } catch {
       setError("Invalid email or password");
     }
   };

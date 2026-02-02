@@ -1,30 +1,16 @@
-import { API_URL } from "./config";
+// src/services/authService.js
+import api from "./api";
 
 export const loginUser = async (email, password) => {
-  const res = await fetch(`${API_URL}/auth/login`, {
-
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.message || "Login failed");
-  }
-  return data;
+  const res = await api.post("/auth/login", { email, password });
+  return res.data;
 };
 
 export const registerUser = async (name, email, password) => {
-  const res = await fetch(`${API_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
+  const res = await api.post("/auth/register", {
+    name,
+    email,
+    password,
   });
-
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(data.message || "Registration failed");
-  }
-  return data;
+  return res.data;
 };

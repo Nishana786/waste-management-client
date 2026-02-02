@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+/* ✅ API URL (Vite) */
+const API_URL = import.meta.env.VITE_API_URL;
+
+/* 🔧 Notification normalize */
 const normalizeNotification = (msg) =>
   msg.toLowerCase().replace(/\s+/g, "");
 
@@ -16,14 +20,20 @@ const Dashboard = () => {
 
   const [loading, setLoading] = useState(true);
 
-  /*  REMOVE NOTIFICATION (PERSISTENT) */
+  /* ❌ API_URL missing guard */
+  useEffect(() => {
+    if (!API_URL) {
+      console.error("❌ VITE_API_URL is not defined");
+      setLoading(false);
+    }
+  }, []);
+
+  /* 🗑️ REMOVE NOTIFICATION (PERSISTENT) */
   const removeNotification = (msg) => {
     const key = normalizeNotification(msg);
 
     const dismissed =
-      JSON.parse(
-        localStorage.getItem("dismissed_notifications")
-      ) || [];
+      JSON.parse(localStorage.getItem("dismissed_notifications")) || [];
 
     localStorage.setItem(
       "dismissed_notifications",
@@ -40,27 +50,28 @@ const Dashboard = () => {
 
   /* 🔄 FETCH DASHBOARD DATA */
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/dashboard/stats", {
+    if (!token || !API_URL) {
+      setLoading(false);
+      return;
+    }
+
+    fetch(`${API_URL}/dashboard/stats`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
       .then((res) => {
-        if (!res.ok) throw new Error();
+        if (!res.ok) throw new Error("Fetch failed");
         return res.json();
       })
       .then((data) => {
         const dismissed =
-          JSON.parse(
-            localStorage.getItem("dismissed_notifications")
-          ) || [];
+          JSON.parse(localStorage.getItem("dismissed_notifications")) || [];
 
         const filteredNotifications =
           (data.notifications || []).filter(
             (msg) =>
-              !dismissed.includes(
-                normalizeNotification(msg)
-              )
+              !dismissed.includes(normalizeNotification(msg))
           );
 
         setStats({
@@ -69,13 +80,14 @@ const Dashboard = () => {
           notifications: filteredNotifications,
         });
       })
-      .catch(() =>
+      .catch((err) => {
+        console.error("Dashboard API error:", err);
         setStats({
           pendingReports: 0,
           pendingRequests: 0,
           notifications: [],
-        })
-      )
+        });
+      })
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -100,7 +112,7 @@ const Dashboard = () => {
       {/* HEADER */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-800">
-        Dashboard
+          Dashboard
         </h1>
         <p className="text-gray-500 mt-1">
           Your activity & pending actions overview
@@ -126,9 +138,7 @@ const Dashboard = () => {
 
                 <button
                   type="button"
-                  onClick={() =>
-                    removeNotification(msg)
-                  }
+                  onClick={() => removeNotification(msg)}
                   className="w-7 h-7 flex items-center justify-center 
                              rounded-full bg-white border text-gray-700
                              hover:bg-gray-800 hover:text-white transition"
@@ -188,11 +198,7 @@ const StatCard = ({ title, value, color }) => (
   </div>
 );
 
-const ActionButton = ({
-  label,
-  color,
-  onClick,
-}) => (
+const ActionButton = ({ label, color, onClick }) => (
   <button
     type="button"
     onClick={onClick}

@@ -21,7 +21,7 @@ import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   return (
-    <BrowserRouter>
+   
       <Routes>
 
         {/* 👑 ADMIN ROUTES */}
@@ -71,7 +71,7 @@ function App() {
         </Route>
 
       </Routes>
-    </BrowserRouter>
+   
   );
 }
 

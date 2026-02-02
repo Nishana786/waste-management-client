@@ -1,23 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const AdminRoute = () => {
-  const token = localStorage.getItem("access_token");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuth();
 
-  // 🔍 DEBUG
-  console.log("ADMIN USER:", user);
-
-  // 🔒 Not logged in
-  if (!token) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // 👑 Not admin
-  if (!user || user.role !== "admin") {
+  if (user.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }
 
-  // ✅ Admin allowed
   return <Outlet />;
 };
 

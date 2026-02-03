@@ -15,24 +15,41 @@ const Navbar = () => {
   return (
     <nav className="bg-green-700 text-white sticky top-0 z-50 shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        
+        {/* Logo */}
         <Link
-          to={user?.role === "admin" ? "/admin" : "/dashboard"}
+          to={user ? (user.role === "admin" ? "/admin" : "/dashboard") : "/"}
           className="text-xl font-bold"
         >
           ♻ WasteMgmt
         </Link>
 
-        <ul className="hidden md:flex gap-6 text-sm">
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex gap-6 text-sm items-center">
           <li><Link to="/">Home</Link></li>
 
-          {user?.role !== "admin" && user && (
+          {/* User links (always visible) */}
+          {user?.role !== "admin" && (
             <>
-              <li><Link to="/dashboard">Dashboard</Link></li>
-              <li><Link to="/report">Report</Link></li>
-              <li><Link to="/requests">Requests</Link></li>
+              <li>
+                <Link to={user ? "/dashboard" : "/login"}>
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link to={user ? "/report" : "/login"}>
+                  Report
+                </Link>
+              </li>
+              <li>
+                <Link to={user ? "/requests" : "/login"}>
+                  Requests
+                </Link>
+              </li>
             </>
           )}
 
+          {/* Admin links */}
           {user?.role === "admin" && (
             <>
               <li><Link to="/admin">Admin</Link></li>
@@ -43,6 +60,7 @@ const Navbar = () => {
           )}
         </ul>
 
+        {/* Auth Button */}
         {user ? (
           <button
             onClick={handleLogout}
@@ -59,6 +77,7 @@ const Navbar = () => {
           </Link>
         )}
 
+        {/* Mobile Menu Button (UI only for now) */}
         <button className="md:hidden" onClick={() => setOpen(!open)}>
           ☰
         </button>

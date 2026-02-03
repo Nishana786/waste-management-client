@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+
 
 /* ✅ API URL (Vite) */
 const API_URL = import.meta.env.VITE_API_URL;
@@ -19,77 +21,17 @@ const Dashboard = () => {
   });
 
   const [loading, setLoading] = useState(true);
-
-  /* ❌ API_URL missing guard */
-  useEffect(() => {
-    if (!API_URL) {
-      console.error("❌ VITE_API_URL is not defined");
-      setLoading(false);
-    }
-  }, []);
-
-  /* 🗑️ REMOVE NOTIFICATION (PERSISTENT) */
-  const removeNotification = (msg) => {
-    const key = normalizeNotification(msg);
-
-    const dismissed =
-      JSON.parse(localStorage.getItem("dismissed_notifications")) || [];
-
-    localStorage.setItem(
-      "dismissed_notifications",
-      JSON.stringify([...dismissed, key])
-    );
-
-    setStats((prev) => ({
-      ...prev,
-      notifications: prev.notifications.filter(
-        (n) => normalizeNotification(n) !== key
-      ),
-    }));
-  };
-
-  /* 🔄 FETCH DASHBOARD DATA */
-  useEffect(() => {
-    if (!token || !API_URL) {
-      setLoading(false);
-      return;
-    }
-
-    fetch(`${API_URL}/dashboard/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+ useEffect(() => {
+  api.get("/dashboard/stats")
+    .then((res) => {
+      setStats(res.data);
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Fetch failed");
-        return res.json();
-      })
-      .then((data) => {
-        const dismissed =
-          JSON.parse(localStorage.getItem("dismissed_notifications")) || [];
+    .catch(() => {
+      navigate("/login");
+    })
+    .finally(() => setLoading(false));
+}, [navigate]);
 
-        const filteredNotifications =
-          (data.notifications || []).filter(
-            (msg) =>
-              !dismissed.includes(normalizeNotification(msg))
-          );
-
-        setStats({
-          pendingReports: data.pendingReports || 0,
-          pendingRequests: data.pendingRequests || 0,
-          notifications: filteredNotifications,
-        });
-      })
-      .catch((err) => {
-        console.error("Dashboard API error:", err);
-        setStats({
-          pendingReports: 0,
-          pendingRequests: 0,
-          notifications: [],
-        });
-      })
-      .finally(() => setLoading(false));
-  }, [token]);
 
   /* 🦴 SKELETON LOADER */
   if (loading) {

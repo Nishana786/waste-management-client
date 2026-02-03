@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import api from "../services/api";
 
-/* 🎨 STATUS STYLES */
+/* STATUS STYLES */
 const statusStyle = {
   pending: "bg-yellow-100 text-yellow-800",
   approved: "bg-blue-100 text-blue-800",
@@ -42,19 +42,18 @@ const AdminReports = () => {
   };
 
   const remove = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this report?")) return;
+    if (!window.confirm("Are you sure?")) return;
     await api.delete(`/admin/reports/${id}`);
     fetchReports();
   };
 
-  /* 🦴 SKELETON LOADER */
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto p-6">
-        {[1, 2, 3, 4].map((i) => (
+        {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-16 mb-4 rounded-xl bg-gray-200 animate-pulse"
+            className="h-16 mb-4 bg-gray-200 rounded-xl animate-pulse"
           />
         ))}
       </div>
@@ -63,50 +62,42 @@ const AdminReports = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* HEADER */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
-          Admin Reports
-        </h1>
-        <p className="text-gray-500 mt-2">
-          Review, approve or manage reported waste issues
-        </p>
-      </div>
-
-      {/* 📋 TABLE */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow">
         <table className="w-full">
           <thead className="bg-gray-100">
-            <tr className="text-gray-600 text-sm uppercase">
+            <tr className="text-sm uppercase text-gray-600">
               <th className="p-4 text-left">Issue</th>
               <th className="p-4 text-left">Location</th>
               <th className="p-4 text-center">Status</th>
               <th className="p-4 text-center">Actions</th>
+              <th className="p-4 text-left">Photo</th>
+
             </tr>
           </thead>
 
           <tbody>
             {reports.map((r) => (
-              <tr
-                key={r.id}
-                className="border-t hover:bg-gray-50 transition"
-              >
+              <tr key={r.id} className="border-t hover:bg-gray-50">
                 {/* ISSUE */}
-                <td className="p-4 flex items-center gap-2">
-                  <FileText className="text-gray-400" size={18} />
-                  {r.issueType}
+                <td className="p-4">
+                  <div className="flex items-center gap-2">
+                    <FileText size={16} className="text-gray-400" />
+                    {r.issueType}
+                  </div>
                 </td>
 
                 {/* LOCATION */}
-                <td className="p-4 flex items-center gap-2 text-gray-600">
-                  <MapPin size={16} />
-                  {r.location}
+                <td className="p-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin size={16} />
+                    {r.location}
+                  </div>
                 </td>
 
                 {/* STATUS */}
                 <td className="p-4 text-center">
                   <span
-                    className={`px-3 py-1 text-sm rounded-full font-medium ${statusStyle[r.status]}`}
+                    className={`px-3 py-1 rounded-full text-sm ${statusStyle[r.status]}`}
                   >
                     {r.status}
                   </span>
@@ -152,15 +143,24 @@ const AdminReports = () => {
                     )}
                   </div>
                 </td>
+                <td className="p-4">
+  {r.photo ? (
+    <img
+    src={r.photo} 
+      alt="report"
+      className="w-16 h-16 object-cover rounded-lg border"
+    />
+  ) : (
+    <span className="text-gray-400 text-sm">No Image</span>
+  )}
+</td>
+
               </tr>
             ))}
 
             {reports.length === 0 && (
               <tr>
-                <td
-                  colSpan="4"
-                  className="p-6 text-center text-gray-500"
-                >
+                <td colSpan="4" className="p-6 text-center text-gray-500">
                   No reports found
                 </td>
               </tr>
@@ -172,12 +172,10 @@ const AdminReports = () => {
   );
 };
 
-/* ---------------- BUTTON ---------------- */
-
 const ActionBtn = ({ onClick, color, icon, label }) => (
   <button
     onClick={onClick}
-    className={`${color} text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1 shadow hover:shadow-lg transition`}
+    className={`${color} text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1`}
   >
     {icon}
     {label}

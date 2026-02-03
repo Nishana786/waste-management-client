@@ -3,8 +3,9 @@ import { useAuth } from "../context/AuthContext";
 
 const AdminRoute = () => {
   const { user } = useAuth();
+  const token = localStorage.getItem("access_token");
 
-  if (!user) {
+  if (!user || !token) {
     return <Navigate to="/login" replace />;
   }
 

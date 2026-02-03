@@ -6,10 +6,12 @@ import {
   Clock,
   MapPin,
   Recycle,
+  Calendar,
+  Phone,
 } from "lucide-react";
 import api from "../services/api";
 
-/* 🎨 STATUS BADGE STYLES */
+/* STATUS STYLES */
 const statusStyle = {
   pending: "bg-yellow-100 text-yellow-800",
   approved: "bg-blue-100 text-blue-800",
@@ -42,20 +44,16 @@ const AdminRequests = () => {
   };
 
   const remove = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this request?")) return;
+    if (!window.confirm("Are you sure?")) return;
     await api.delete(`/admin/requests/${id}`);
     fetchRequests();
   };
 
-  /* 🦴 SKELETON LOADER */
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto p-6">
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="h-16 mb-4 rounded-xl bg-gray-200 animate-pulse"
-          />
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-16 mb-4 bg-gray-200 rounded-xl animate-pulse" />
         ))}
       </div>
     );
@@ -63,23 +61,15 @@ const AdminRequests = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      {/* HEADER */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
-          Pickup Requests
-        </h1>
-        <p className="text-gray-500 mt-2">
-          Manage waste pickup requests and status updates
-        </p>
-      </div>
-
-      {/* 📋 TABLE */}
       <div className="overflow-x-auto bg-white rounded-2xl shadow">
         <table className="w-full">
           <thead className="bg-gray-100">
-            <tr className="text-gray-600 text-sm uppercase">
+            <tr className="text-sm uppercase text-gray-600">
               <th className="p-4 text-left">Waste</th>
               <th className="p-4 text-left">Address</th>
+              <th className="p-4 text-left">Date</th>
+              <th className="p-4 text-left">Time</th>
+              <th className="p-4 text-left">Phone</th>
               <th className="p-4 text-center">Status</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
@@ -87,26 +77,46 @@ const AdminRequests = () => {
 
           <tbody>
             {requests.map((r) => (
-              <tr
-                key={r.id}
-                className="border-t hover:bg-gray-50 transition"
-              >
-                {/* WASTE TYPE */}
-                <td className="p-4 flex items-center gap-2">
-                  <Recycle size={18} className="text-gray-400" />
-                  {r.wasteType}
+              <tr key={r.id} className="border-t hover:bg-gray-50">
+                {/* WASTE */}
+                <td className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Recycle size={16} />
+                    {r.wasteType}
+                  </div>
                 </td>
 
                 {/* ADDRESS */}
-                <td className="p-4 flex items-center gap-2 text-gray-600">
-                  <MapPin size={16} />
-                  {r.address}
+                <td className="p-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin size={16} />
+                    {r.address}
+                  </div>
+                </td>
+
+                {/* DATE */}
+                <td className="p-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar size={16} />
+                    {r.date}
+                  </div>
+                </td>
+
+                {/* TIME */}
+                <td className="p-4 text-gray-600">{r.timeSlot}</td>
+
+                {/* PHONE */}
+                <td className="p-4">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Phone size={16} />
+                    {r.phone}
+                  </div>
                 </td>
 
                 {/* STATUS */}
                 <td className="p-4 text-center">
                   <span
-                    className={`px-3 py-1 text-sm rounded-full font-medium ${statusStyle[r.status]}`}
+                    className={`px-3 py-1 rounded-full text-sm ${statusStyle[r.status]}`}
                   >
                     {r.status}
                   </span>
@@ -141,8 +151,7 @@ const AdminRequests = () => {
                       />
                     )}
 
-                    {(r.status === "completed" ||
-                      r.status === "rejected") && (
+                    {(r.status === "completed" || r.status === "rejected") && (
                       <ActionBtn
                         onClick={() => remove(r.id)}
                         color="bg-gray-800 hover:bg-black"
@@ -154,17 +163,6 @@ const AdminRequests = () => {
                 </td>
               </tr>
             ))}
-
-            {requests.length === 0 && (
-              <tr>
-                <td
-                  colSpan="4"
-                  className="p-6 text-center text-gray-500"
-                >
-                  No pickup requests found
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
@@ -172,12 +170,10 @@ const AdminRequests = () => {
   );
 };
 
-/* ---------------- BUTTON ---------------- */
-
 const ActionBtn = ({ onClick, color, icon, label }) => (
   <button
     onClick={onClick}
-    className={`${color} text-white px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-1 shadow hover:shadow-lg transition`}
+    className={`${color} text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1`}
   >
     {icon}
     {label}

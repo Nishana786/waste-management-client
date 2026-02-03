@@ -1,41 +1,27 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminCharts from "../../components/Admin/AdminCharts";
+import api from "../../services/api";
 
-/* ✅ ENV BASED API URL */
-const API_URL = import.meta.env.VITE_API_URL;
+
+
 
 const SystemStats = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("access_token");
+
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    fetch(`${API_URL}/admin/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  api
+    .get("/admin/stats")
+    .then((res) => {
+      setStats(res.data);
     })
-      .then((res) => {
-        if (res.status === 401 || res.status === 403) {
-          navigate("/login");
-          return null;
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data) setStats(data);
-      })
-      .catch((err) => {
-        console.error("Fetch error:", err);
-        navigate("/login");
-      });
-  }, [token, navigate]);
+    .catch(() => {
+      navigate("/login");
+    });
+}, [navigate]);
+
 
   /* 🔄 LOADING */
   if (!stats) {

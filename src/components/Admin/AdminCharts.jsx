@@ -9,7 +9,7 @@ import {
 
 const AdminCharts = ({ stats }) => {
 
-  // chart data prepare cheyyam
+  
   const data = [
     { name: "Reports", value: stats.totalReports },
     { name: "Requests", value: stats.totalRequests },

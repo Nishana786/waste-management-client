@@ -1,77 +1,74 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Report from "./pages/Report";
-import Request from "./pages/Request";
+// 🌍 PUBLIC / USER PAGES
+import Home from "./pages/user/Home"
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Dashboard from "./pages/user/Dashboard"
+import Report from "./pages/user/Report"
+import Request from "./pages/user/Request";
 
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminReports from "./pages/AdminReports";
-import AdminRequests from "./pages/AdminRequests";
+// 👑 ADMIN PAGES
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminReports from "./pages/admin/AdminReports";
+import AdminRequests from "./pages/admin/AdminRequests";
 import SystemStats from "./pages/admin/SystemStats";
 import Drivers from "./pages/admin/Drivers";
-import AddDriver from "./pages/admin/AddDriver";
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import AdminRoute from "./components/AdminRoute";
+// 🔐 ROUTE GUARDS & LAYOUTS
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminRoute from "./routes/AdminRoute";
 import UserLayout from "./layouts/UserLayout";
 import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
   return (
-   
-      <Routes>
-
-        {/* 👑 ADMIN ROUTES */}
-        <Route element={<AdminRoute />}>
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="reports" element={<AdminReports />} />
-            <Route path="requests" element={<AdminRequests />} />
-            <Route path="drivers" element={<Drivers />} />
-            <Route path="add-driver" element={<AddDriver />} />
-            <Route path="stats" element={<SystemStats />} />
-          </Route>
+    <Routes>
+      {/* 👑 ADMIN ROUTES */}
+      <Route element={<AdminRoute />}>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="reports" element={<AdminReports />} />
+          <Route path="requests" element={<AdminRequests />} />
+          <Route path="drivers" element={<Drivers />} />
+          <Route path="stats" element={<SystemStats />} />
         </Route>
+      </Route>
 
-        {/* 🌍 USER / PUBLIC */}
-        <Route element={<UserLayout />}>
-          <Route index element={<Home />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+      {/* 🌍 USER / PUBLIC ROUTES */}
+      <Route element={<UserLayout />}>
+        <Route index element={<Home />} />
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
 
-          <Route
-            path="dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="report"
-            element={
-              <ProtectedRoute>
-                <Report />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path="report"
+          element={
+            <ProtectedRoute>
+              <Report />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="requests"
-            element={
-              <ProtectedRoute>
-                <Request />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
-
-      </Routes>
-   
+        <Route
+          path="requests"
+          element={
+            <ProtectedRoute>
+              <Request />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
   );
 }
 

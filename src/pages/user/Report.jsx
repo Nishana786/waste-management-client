@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { createReport } from "../services/reportService";
+import { createReport } from "../../services/reportService";
 
 const Report = () => {
   const [formData, setFormData] = useState({

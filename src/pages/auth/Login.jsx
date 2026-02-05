@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../services/authService";
-import { useAuth } from "../context/AuthContext";
+import { loginUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +17,7 @@ const Login = () => {
     try {
       const data = await loginUser(email, password);
 
-      // ✅ CONTEXT LOGIN
+     
       login(data);
 
       if (data.user.role === "admin") {

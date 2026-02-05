@@ -7,7 +7,7 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
-import api from "../services/api";
+import api from "../../services/api";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
